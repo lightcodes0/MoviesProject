@@ -9,17 +9,19 @@ let selectedYearFilter = "";
 let searchPerformed = false
 
 function showSkeleton() {
-    movieListEl.innerHTML = `<div class="skeleton">
+        movieListEl.innerHTML = `<div class="skeleton">
         <div class="skeleton__text">Loading...</div>
     </div>`
-}
+    }
 
 function hideSkeleton() {
     movieListEl.innerHTML = '';
 }
 
 async function searchMovies(query, yearFilter) {
-    showSkeleton()
+
+    searchPerformed = true
+
     const apiKey = "df84b5aa";
     
     let apiUrl = `https://www.omdbapi.com/?apikey=${apiKey}&s=${query}`;
@@ -44,14 +46,16 @@ async function searchMovies(query, yearFilter) {
 }
 
 function delaySearchMovies(query, yearFilter) {
-    showSkeleton();
+    if (searchPerformed) {
+        showSkeleton();
+    }
     setTimeout(() => {
         searchMovies(query, yearFilter);
     }, 450);
 }
 
 function displayFilteredMovies(searchData) {
-    hideSkeleton(); // Hide the skeleton initially
+    hideSkeleton();
 
     if (searchData.Search && searchData.Search.length > 0) {
         const filteredMovies = searchData.Search.filter(movie => {
@@ -69,11 +73,10 @@ function displayFilteredMovies(searchData) {
         if (filteredMovies.length > 0) {
             const movieHTMLArray = filteredMovies.map(movie => movieHTML(movie));
             movieListEl.innerHTML = movieHTMLArray.slice(0, 6).join('');
-        } else {
-            movieListEl.innerHTML = 'No movies found.';
         }
-    } else {
-        if (searchPerformed) {
+
+    }   else {
+            if (searchPerformed && searchQuery) {
             movieListEl.innerHTML = 'No movies found.';
         }
     }
